@@ -7,6 +7,7 @@ from core.models.incident import Incident
 from slack.slack_utils import get_or_create_channel, send_message, SlackError, rename_channel
 from slack.block_kit import *
 
+import time
 import logging
 logger = logging.getLogger(__name__)
 
@@ -15,7 +16,8 @@ class CommsChannelManager(models.Manager):
     def create_comms_channel(self, incident):
         "Creates a comms channel in slack, and saves a reference to it in the DB"
         try:
-            name = f"inc-{100+incident.pk}"
+            timestamp = time.strftime("%Y%m%d-%H%M%S")
+            name = f"inc-{timestamp}"
             channel_id = get_or_create_channel(name)
         except SlackError as e:
             logger.error('Failed to create comms channel {e}')

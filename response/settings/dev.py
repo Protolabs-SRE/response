@@ -2,6 +2,9 @@ from .base import *
 
 SITE_URL = "http://localhost:8000"
 
+if "TUNNEL_HOSTNAME" in os.environ:
+    SITE_URL =  os.environ.get("TUNNEL_HOSTNAME")
+
 if os.environ.get("POSTGRES"):
     DATABASES = {
         'default': {
