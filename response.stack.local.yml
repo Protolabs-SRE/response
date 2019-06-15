@@ -1,0 +1,79 @@
+version: '3.3'
+services:
+  response:
+    image: "protolabs/response:latest-dev"
+    entrypoint: bash
+    command: /app/startup.sh
+    environment:
+      - POSTGRES=true
+      - DB_HOST=<SET_THIS>.postgres.database.azure.com
+      - DB_PORT=5432
+      - DB_NAME=<SET_THIS>
+      - DB_USER=<SET_THIS>@<SET_THIS>.postgres.database.azure.com
+      - DB_PASSWORD=<SET_THIS>
+      - DB_SSL_MODE=require
+      - SLACK_TOKEN=<SET_THIS>
+      - SLACK_SIGNING_SECRET=<SET_THIS>
+      - INCIDENT_CHANNEL_NAME=incidents
+      - INCIDENT_BOT_NAME=incident
+      - SITE_URL=<SET_THIS>
+      - DJANGO_SETTINGS_MODULE=response.settings.prod
+      - STATUS_PAGE_RUNBOOK_URL=https://google.com
+      - RUNBOOKS_URL=https://google.com
+      - PAGERDUTY_ENABLED=false
+      - PAGERDUTY_API_KEY=""
+      - PAGERDUTY_SERVICE=""
+      - PAGERDUTY_DEFAULT_EMAIL=""
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 30s
+        max_attempts: 10
+        window: 360s
+      update_config:
+        parallelism: 1
+        delay: 30s
+        failure_action: rollback
+    networks:
+      internal:
+
+  cron:
+    image: "protolabs/response-cron:latest-dev"
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 1
+    depends_on:
+        - response
+    networks:
+      internal:
+  
+  tunnel:
+    image: "<SET_THIS>/<SET_THIS>/cloudflareargotunnel:latest"
+    environment:
+      - TUNNEL_URL=http://response:8000
+      - TUNNEL_HOSTNAME=<SET_THIS>
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 30s
+        max_attempts: 10
+        window: 360s
+    depends_on:
+      - response
+    networks:
+      internal:
+      
+networks:
+  internal:
+    external:
+      name: <SET_THIS>
