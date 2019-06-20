@@ -8,7 +8,11 @@ slack_client = SlackClient(slack_token)
 
 class Message:
     def __init__(self):
+        self.fallback_text = None
         self.blocks = []
+
+    def set_fallback_text(self, text):
+        self.fallback_text = text
 
     def add_block(self, block):
         self.blocks.append(block)
@@ -27,6 +31,7 @@ class Message:
 
         response = slack_client.api_call(
             api_call,
+            text=self.fallback_text,
             channel=channel,
             ts=ts,
             blocks=self.serialize(),
@@ -43,9 +48,10 @@ class Block:
 
 
 class Section(Block):
-    def __init__(self, block_id=None, text=None, fields=None):
+    def __init__(self, block_id=None, text=None, accessory=None, fields=None):
         super().__init__(block_id=block_id)
         self.text = text
+        self.accessory = accessory
         self.fields = fields
 
     def add_field(self, field):
@@ -58,15 +64,21 @@ class Section(Block):
             "type": "section",
         }
 
+        if not (self.fields or self.text or self.accessory):
+            raise ValueError
+
         if self.block_id:
             block['block_id'] = self.block_id
 
+        if self.fields:
+            block['fields'] = [t.serialize() for t in self.fields]
+            return block
+
         if self.text:
             block['text'] = self.text.serialize()
-        elif self.fields:
-            block['fields'] = [t.serialize() for t in self.fields]
-        else:
-            raise ValueError
+
+        if self.accessory:
+            block['accessory'] = self.accessory.serialize()
 
         return block
 
@@ -100,11 +112,40 @@ class Divider(Block):
         }
 
 
+class Confirm(Block):
+    def __init__(self, title, text, confirm, deny):
+        self.title = title
+        self.text = text
+        self.confirm = confirm
+        self.deny = deny
+
+    def serialize(self):
+        return {
+            "title": {
+                "type": "plain_text",
+                "text": self.title
+            },
+            "text": {
+                "type": "mrkdwn",
+                "text": self.text
+            },
+            "confirm": {
+                "type": "plain_text",
+                "text": self.confirm
+            },
+            "deny": {
+                "type": "plain_text",
+                "text": self.deny
+            }
+        }
+
+
 class Button:
-    def __init__(self, text, action_id, value=None):
+    def __init__(self, text, action_id, value=None, confirm=None):
         self.text = Text(text=text, text_type="plain_text")
         self.action_id = action_id
         self.value = value
+        self.confirm = confirm
 
     def serialize(self):
         button = {
@@ -112,6 +153,9 @@ class Button:
             "text": self.text.serialize(),
             "action_id": self.action_id,
         }
+
+        if self.confirm:
+            button['confirm'] = self.confirm.serialize()
 
         if self.value:
             button['value'] = str(self.value)
