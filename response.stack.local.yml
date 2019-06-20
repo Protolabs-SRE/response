@@ -20,6 +20,7 @@ services:
       - DJANGO_SETTINGS_MODULE=response.settings.prod
       - STATUS_PAGE_RUNBOOK_URL=https://google.com
       - RUNBOOKS_URL=https://google.com
+      - ENCRYPTED_FIELD_KEY=<SET_THIS>
       - PAGERDUTY_ENABLED=false
       - PAGERDUTY_API_KEY=""
       - PAGERDUTY_SERVICE=""
