@@ -2,6 +2,8 @@ from .base import *
 
 SITE_URL =  os.environ.get("SITE_URL")
 
+DEBUG = False
+
 if os.environ.get("POSTGRES"):
     DATABASES = {
         'default': {
@@ -46,6 +48,7 @@ INCIDENT_CHANNEL_NAME = get_env_var("INCIDENT_CHANNEL_NAME")
 INCIDENT_BOT_NAME = get_env_var("INCIDENT_BOT_NAME")
 STATUS_PAGE_RUNBOOK_URL = get_env_var("STATUS_PAGE_RUNBOOK_URL")
 RUNBOOKS_URL = get_env_var("RUNBOOKS_URL")
+ENCRYPTED_FIELD_KEY = get_env_var("ENCRYPTED_FIELD_KEY")
 
 try:
     INCIDENT_BOT_ID = get_user_id(INCIDENT_BOT_NAME, SLACK_TOKEN)
@@ -56,3 +59,11 @@ try:
     INCIDENT_CHANNEL_ID = get_channel_id(INCIDENT_CHANNEL_NAME, SLACK_TOKEN)
 except:
     INCIDENT_CHANNEL_ID = None
+
+
+PAGERDUTY_ENABLED = os.getenv("PAGERDUTY_ENABLED") in ("True", "\"True\"", "true", "\"true\"", True, 1)
+if PAGERDUTY_ENABLED:
+    print("PagerDuty is Enabled")
+    PAGERDUTY_API_KEY = get_env_var("PAGERDUTY_API_KEY")
+    PAGERDUTY_SERVICE = get_env_var("PAGERDUTY_SERVICE")
+    PAGERDUTY_DEFAULT_EMAIL = get_env_var("PAGERDUTY_DEFAULT_EMAIL")
