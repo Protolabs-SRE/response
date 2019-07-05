@@ -36,8 +36,8 @@
                         <td class="col-2">{{ incident.start_time }}</td>
                         <td class="col-1">{% if incident.severity %}{{ incident.severity_text|upper }}{% endif %}</td>
                         <td class="col-3">{{ incident.summary }}</td>
-                        <td class="col-2">{{ incident.reporter|slack_id_to_fullname }}</td>
-                        <td class="col-2">{% if incident.lead %}{{ incident.lead|slack_id_to_fullname }}{% endif %}</td>
+                        <td class="col-2">{{ incident.reporter.display_name }}</td>
+                        <td class="col-2">{% if incident.lead %}{{ incident.lead.display_name }}{% endif %}</td>
                     </tr>
                 {% endfor %}
             </table>
