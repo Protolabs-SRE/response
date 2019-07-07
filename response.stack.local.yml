@@ -59,6 +59,8 @@ services:
     environment:
       - TUNNEL_URL=http://response:8000
       - TUNNEL_HOSTNAME=<SET_THIS>
+      - TUNNEL_RETRIES=0
+    restart: always
     deploy:
       placement:
         constraints:
