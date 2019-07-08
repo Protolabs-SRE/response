@@ -1,1 +1,1 @@
-docker-compose -f .\response.stack.local.yml up
+docker-compose -f .\response.stack.local.yml up --force-recreate
