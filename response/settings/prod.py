@@ -2,7 +2,8 @@ from .base import *
 
 SITE_URL =  os.environ.get("SITE_URL")
 
-DEBUG = False
+# Disabling to allow for Django to serve static files (not ideal or recommended)
+# DEBUG = False
 
 if os.environ.get("POSTGRES"):
     DATABASES = {
