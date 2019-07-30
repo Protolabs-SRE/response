@@ -75,7 +75,7 @@ class HeadlinePost(models.Model):
 
             actions.add_element(Button(":pencil2: Edit", self.EDIT_INCIDENT_BUTTON, value=self.incident.pk))
 
-            actions.add_element(Button(":white_check_mark: Resolve", self.CLOSE_INCIDENT_BUTTON, value=self.incident.pk))
+            actions.add_element(Button(":white_check_mark: Close", self.CLOSE_INCIDENT_BUTTON, value=self.incident.pk))
 
             msg.add_block(actions)
 
